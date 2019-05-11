@@ -5,6 +5,7 @@
     using System.Configuration;
     using System.IO;
     using System.Linq;
+    using System.Security;
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.Azure.Documents;
@@ -26,7 +27,8 @@
         public static void Main(string[] args)
         {
             string endpoint = ConfigurationManager.AppSettings["Endpoint"];
-            string authKey = ConfigurationManager.AppSettings["AuthKey"];
+            SecureString authKey = new SecureString();
+               ConfigurationManager.AppSettings["AuthKey"].ToCharArray().ToList().ForEach(c => authKey.AppendChar(c));
 
             using (DocumentClient client = new DocumentClient(
                 new Uri(endpoint),
