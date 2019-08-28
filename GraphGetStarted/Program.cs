@@ -50,8 +50,8 @@
             Database database = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = "anvesa" });
 
             DocumentCollection graph = await client.CreateDocumentCollectionIfNotExistsAsync(
-                UriFactory.CreateDatabaseUri("anvesa"),
-                new DocumentCollection { Id = "emails-ii" },
+                UriFactory.CreateDatabaseUri("exforge"),
+                new DocumentCollection { Id = "exforge" },
                 new RequestOptions { OfferThroughput = 1000 });
 
             // Azure Cosmos DB supports the Gremlin API for working with Graphs. Gremlin is a functional programming language composed of steps.
@@ -66,10 +66,9 @@
             await QueryGremlin(client, graph, new KeyValuePair<string, string>("Cleanup", "g.V().drop()"));
 
             var read = new EmailData().GetCSV();
-            
-            for (int i = 0; i < 10; i++)
-            {
 
+            for (int i = 0; i < 25; i++)
+            {
                 try
                 {
                     var email = read[i];
@@ -101,15 +100,15 @@
                     //    gremlinQueries.Add($"AddVertexFor{line[8]}", $"g.AddV('email').property('subject','{line[28]}').property('BegDoc','{line[8]}')");
                     //}
 
-                    result = await QueryGremlin(client, graph, new KeyValuePair<string, string>($"{begDoc}", CheckVerticesExistanceQuery("subject",subject)));
+                    result = await QueryGremlin(client, graph, new KeyValuePair<string, string>($"{subject}", CheckVerticesExistanceQuery("subject",subject)));
                     if (string.IsNullOrEmpty(result))
                     {
                         //gremlinQueries.Add($"AddVertexFor{line[12]}", $"g.AddV('email').property('subject','{line[28]}')");
-                        await QueryGremlin(client, graph, new KeyValuePair<string, string>($"AddVertexFor{begDoc}", AddVertices("subject",subject, "email")));
+                        await QueryGremlin(client, graph, new KeyValuePair<string, string>($"AddVertexFor{subject}", AddVertices("name",subject, "email")));
                     }
 
-                    await QueryGremlin(client, graph, new KeyValuePair<string, string>($"AddEdge1", $"g.V().has('name','{to}').addE('sent').to(g.V().has('subject','{subject}'))"));
-                    await QueryGremlin(client, graph, new KeyValuePair<string, string>($"AddEdge2", $"g.V().has('name','{from}').addE('received').to(g.V().has('subject','{subject}'))"));
+                    await QueryGremlin(client, graph, new KeyValuePair<string, string>($"AddEdge1", $"g.V().has('name','{to}').addE('sent').to(g.V().has('name','{subject}'))"));
+                    await QueryGremlin(client, graph, new KeyValuePair<string, string>($"AddEdge2", $"g.V().has('name','{from}').addE('received').to(g.V().has('name','{subject}'))"));
                 }
                 catch (Exception ex)
                 {
@@ -149,8 +148,8 @@
 
             // Data is returned in GraphSON format, which be deserialized into a strongly-typed vertex, edge or property class
             // The following snippet shows how to do this
-            string gremlin = gremlinQueries["AddVertex 1"];
-            Console.WriteLine($"Running Add Vertex with deserialization: {gremlin}");
+           //string gremlin = gremlinQueries["AddVertex 1"];
+           // Console.WriteLine($"Running Add Vertex with deserialization: {gremlin}");
 
             //await CreateNetQuery(client, graph, );
 
@@ -167,7 +166,7 @@
 
         string AddVertices(string propName, string variable, string label)
         {
-            return $"g.AddV('{label}').property('{propName}','{variable}')";
+            return $"g.AddV('{label}').property('Something', 'one').property('{propName}','{variable}')";
         }
 
         private static async Task<bool> CreateNetQuery(DocumentClient client, DocumentCollection graph, string query)
