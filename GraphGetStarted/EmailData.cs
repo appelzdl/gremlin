@@ -13,7 +13,7 @@ namespace GraphGetStarted
     {
         public List<dynamic> GetCSV()
         {
-            string path = @"C:\Users\DavidAppel\Documents\Anvesa\exforge.csv";
+            string path = @"";
 
             FileInfo file = new FileInfo(path);
             var reader = new CsvReader(new StringReader(file.OpenText().ReadToEnd()));

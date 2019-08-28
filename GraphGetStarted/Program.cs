@@ -50,8 +50,8 @@
             Database database = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = "anvesa" });
 
             DocumentCollection graph = await client.CreateDocumentCollectionIfNotExistsAsync(
-                UriFactory.CreateDatabaseUri("exforge"),
-                new DocumentCollection { Id = "exforge" },
+                UriFactory.CreateDatabaseUri(""),
+                new DocumentCollection { Id = "" },
                 new RequestOptions { OfferThroughput = 1000 });
 
             // Azure Cosmos DB supports the Gremlin API for working with Graphs. Gremlin is a functional programming language composed of steps.
